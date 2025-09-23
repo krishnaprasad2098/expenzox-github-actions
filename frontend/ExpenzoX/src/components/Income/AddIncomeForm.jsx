@@ -22,6 +22,7 @@ const AddIncomeForm = ({ onAddIncome }) => {
       />
 
       <Input
+      id="income-source"
         value={income.source}
         onChange={({ target }) => handleChange('source', target.value)}
         label="Income Source"
@@ -32,6 +33,7 @@ const AddIncomeForm = ({ onAddIncome }) => {
       />
 
       <Input
+      id="income-amount"
         value={income.amount}
         onChange={({ target }) => handleChange('amount', target.value)}
         label="Amount"
@@ -41,6 +43,7 @@ const AddIncomeForm = ({ onAddIncome }) => {
       />
 
       <Input
+      id="income-date"
         value={income.date}
         onChange={({ target }) => handleChange('date', target.value)}
         label="Date"
