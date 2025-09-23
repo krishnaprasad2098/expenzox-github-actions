@@ -1,13 +1,19 @@
 name: CI/CD pipeline
-
 on:
   push:
     branches:
       - main
-
 jobs:
-  build-and-deploy:
-    name: Build, Test, Deploy to EC2
+  Application checkout:
+    name: Checkout code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      id: checkout
+      uses: actions/checkout@v5
+  
+  Unit Testing:
+    name: Checkout code
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -24,6 +30,12 @@ jobs:
         cd frontend/ExpenzoX
         npm install
         npm run test
+  Deploying:
+    name: Checkout code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5    
 
     - name: Deploy
       run: echo "Deploying"
