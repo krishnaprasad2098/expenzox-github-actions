@@ -4,9 +4,12 @@ on:
     branches:
       - main
 jobs:
+
   checkout:
     name: Checkout code
     runs-on: ubuntu-latest
+    # outputs:
+    #   checkoutcode: ${{ steps.checkout.outputs.commit }}
     steps:
     - name: Checkout code
       id: checkout
@@ -30,9 +33,12 @@ jobs:
         cd frontend/ExpenzoX
         npm install
         npm run test
+
   deploying:
+  
     name: Deploying
     runs-on: ubuntu-latest
+    needs: testing
     steps:
     - name: Checkout code
       uses: actions/checkout@v5    
