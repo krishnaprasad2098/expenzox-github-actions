@@ -12,7 +12,7 @@ jobs:
       id: checkout
       uses: actions/checkout@v5
   
-  Unit Testing:
+  testing:
     name: Checkout code
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +30,7 @@ jobs:
         cd frontend/ExpenzoX
         npm install
         npm run test
-  Deploying:
+  deploying:
     name: Checkout code
     runs-on: ubuntu-latest
     steps:
