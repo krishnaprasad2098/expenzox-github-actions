@@ -1,0 +1,69 @@
+name: CI pipeline
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  testing:
+    name: Unit testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      
+      - name: NodeJS Setup
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Frontend tests
+        run: |
+          cd frontend/ExpenzoX
+          npm install
+          npm run test
+
+      - name: Backend tests
+        run: |
+          cd backend
+          npm install
+          npm run test
+  
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: testing
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build Backend Image
+        run: |
+          cd backend
+          docker build -t expenzox-backend .
+      
+      - name: Build Frontend Image
+        run: |
+          cd frontend/ExpenzoX
+          docker build -t expenzox-frontend .
+
+      - name: Save Docker Images
+        run: |
+          docker save expenzox-frontend | gzip > expenzox-frontend.tar.gz
+          docker save expenzox-backend | gzip > expenzox-bqckend.tar.gz
+      
+      - name: Upload Build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images-${{ github.sha }}
+          path: |
+            expenzox-frontend.tar.gz
+            expenzox-backend.tar.gz
+          retention-days: 7
+  
+  # notify-build-complete:
