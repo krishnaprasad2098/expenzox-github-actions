@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+      - name: Install dependencies
+        run: npm install
 
       - name: Frontend tests
         run: |
