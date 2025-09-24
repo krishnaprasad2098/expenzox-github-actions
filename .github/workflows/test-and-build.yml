@@ -19,20 +19,21 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
+          # cache: 'npm'
+      
+      # - name: Install dependencies
+      #   run: npm install
 
       - name: Frontend tests
         run: |
           cd frontend/ExpenzoX
-          npm install
+          npm ci
           npm run test
 
       - name: Backend tests
         run: |
           cd backend
-          npm install
+          npm ci
           npm run test
   
   build:
