@@ -1,13 +1,29 @@
-FROM node:22.19.0
+FROM node:22.19.0-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json .
+COPY package.json package-lock.json .
 
-RUN npm install
+# RUN npm install
+RUN npm ci && npm cache clean --force
 
 COPY . .
 
-EXPOSE 5173
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+# EXPOSE 5173
+
+# CMD ["npm", "run", "dev"]
+
+# Stage 2: Production (serve static site)
+FROM nginx:alpine
+
+# Clean out default nginx html folder
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built assets from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
