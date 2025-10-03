@@ -55,18 +55,18 @@ jobs:
           cd frontend/ExpenzoX
           docker build -t expenzox-frontend .
 
-      - name: Save Docker Images
-        run: |
-          docker save expenzox-frontend | gzip > expenzox-frontend.tar.gz
-          docker save expenzox-backend | gzip > expenzox-bqckend.tar.gz
+      # - name: Save Docker Images
+      #   run: |
+      #     docker save expenzox-frontend | gzip > expenzox-frontend.tar.gz
+      #     docker save expenzox-backend | gzip > expenzox-backend.tar.gz
       
-      - name: Upload Build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images-${{ github.sha }}
-          path: |
-            expenzox-frontend.tar.gz
-            expenzox-backend.tar.gz
-          retention-days: 7
+      # - name: Upload Build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: docker-images-${{ github.sha }}
+      #     path: |
+      #       expenzox-frontend.tar.gz
+      #       expenzox-backend.tar.gz
+      #     retention-days: 7
   
   # notify-build-complete:
