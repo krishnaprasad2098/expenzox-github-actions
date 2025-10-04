@@ -1,0 +1,13 @@
+node_modules
+.dockerignore
+Dockerfile
+*.log
+*.md
+*.test.js
+*.spec.js
+jest.config.js
+.git
+.gitignore
+coverage
+tmp
+.env

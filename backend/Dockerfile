@@ -1,13 +1,33 @@
-FROM node:22.19.0
+# FROM node:22.19.0-alpine
+
+# WORKDIR /app
+
+# # COPY package.json .
+
+# COPY package.json package-lock.json .
+
+# RUN npm ci --only=production --no-cache
+
+# COPY . .
+
+# EXPOSE 8000
+
+# CMD ["npm", "run", "dev"]
+
+
+
+# Build Stage
+FROM node:22.19.0-alpine AS build
 
 WORKDIR /app
-
-COPY package.json .
-
-RUN npm install
-
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
 COPY . .
 
-EXPOSE 8000
+# Final distroless image
+FROM gcr.io/distroless/nodejs22-debian12
 
-CMD ["npm","run","dev"]
+WORKDIR /app
+COPY --from=build /app /app
+
+CMD ["node", "server.js"]
