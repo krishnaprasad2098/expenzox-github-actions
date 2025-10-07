@@ -1,10 +1,10 @@
 name: CI/CD pipeline
 on:
-  # push:
-  #   branches:
-  #     - main
-  tag:
-    - 'v*'
+  push:
+    branches:
+      - main
+  # tag:
+  #   - 'v*'
   pull_request:
     branches:
       - main
