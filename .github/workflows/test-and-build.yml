@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - main
-  # tag:
-  #   - 'v*'
+  tag:
+    - v*
   pull_request:
     branches:
       - main
