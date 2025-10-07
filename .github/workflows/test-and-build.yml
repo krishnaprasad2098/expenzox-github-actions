@@ -1,10 +1,10 @@
 name: CI/CD pipeline
 on:
   push:
-    # branches:
-    #   - main
-    tags:
-      - '*'
+    branches:
+      - main
+    # tags:
+    #   - '*'
   pull_request:
     branches:
       - main
@@ -74,11 +74,11 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           VERSION_TAG: ${{ github.ref_name }}
         run: |
-          docker tag expenzox-frontend:latest $ECR_REGISTRY:frontend-$VERSION_TAG
-          docker tag expenzox-backend:latest $ECR_REGISTRY:backend-$VERSION_TAG
+          docker tag expenzox-frontend:latest $ECR_REGISTRY:frontend-$IMAGE_TAG
+          docker tag expenzox-backend:latest $ECR_REGISTRY:backend-$IMAGE_TAG
 
-          docker push $ECR_REGISTRY:backend-$VERSION_TAG
-          docker push $ECR_REGISTRY:frontend-$VERSION_TAG
+          docker push $ECR_REGISTRY:backend-$IMAGE_TAG
+          docker push $ECR_REGISTRY:frontend-$IMAGE_TAG
 
 
 
