@@ -72,11 +72,11 @@ jobs:
           ECR_REPOSITRY: expenzox-docker
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker tag expenzox-frontend:latest $ECR_REGISTRY:frontend-$IMAGE_TAG:latest
-          docker tag expenzox-backend:latest $ECR_REGISTRY:backend-$IMAGE_TAG:latest
+          docker tag expenzox-frontend:latest $ECR_REGISTRY/frontend-$IMAGE_TAG:latest
+          docker tag expenzox-backend:latest $ECR_REGISTRY/backend-$IMAGE_TAG:latest
 
-          docker push $ECR_REGISTRY:backend-$IMAGE_TAG:latest
-          docker push $ECR_REGISTRY:frontend-$IMAGE_TAG:latest
+          docker push $ECR_REGISTRY/backend-$IMAGE_TAG:latest
+          docker push $ECR_REGISTRY/frontend-$IMAGE_TAG:latest
 
 
 
