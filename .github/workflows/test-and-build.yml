@@ -1,4 +1,4 @@
-name: CI pipeline
+name: CI/CD pipeline
 on:
   push:
     branches:
@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  testing:
+  Testing:
     name: Unit testing
     runs-on: ubuntu-latest
     steps:
@@ -36,12 +36,13 @@ jobs:
           npm ci
           npm run test
   
-  build:
+  Build and Push:
     name: Build Docker Images
     runs-on: ubuntu-latest
     needs: testing
     if: github.ref == 'refs/heads/main'
     steps:
+    
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -55,18 +56,32 @@ jobs:
           cd frontend/ExpenzoX
           docker build -t expenzox-frontend .
 
-      # - name: Save Docker Images
-      #   run: |
-      #     docker save expenzox-frontend | gzip > expenzox-frontend.tar.gz
-      #     docker save expenzox-backend | gzip > expenzox-backend.tar.gz
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v5.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       
-      # - name: Upload Build artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: docker-images-${{ github.sha }}
-      #     path: |
-      #       expenzox-frontend.tar.gz
-      #       expenzox-backend.tar.gz
-      #     retention-days: 7
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push to ECR
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITRY: expenzox-docker
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag expenzox-frontend:latest $ECR_REGISTRY/$ECR_REPOSITRY:frontend-$IMAGE_TAG
+          docker tag expenzox-backend:latest $ECR_REGISTRY/$ECR_REPOSITRY:backend-$IMAGE_TAG
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITRY:backend-latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITRY:frontend-latest
+
+
+
+
+        
   
-  # notify-build-complete:
+
+     
