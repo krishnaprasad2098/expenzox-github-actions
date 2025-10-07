@@ -1,8 +1,10 @@
 name: CI/CD pipeline
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  tags:
+    - 'v*'
   pull_request:
     branches:
       - main
@@ -42,7 +44,6 @@ jobs:
     needs: testing
     if: github.ref == 'refs/heads/main'
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -71,12 +72,13 @@ jobs:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITRY: expenzox-docker
           IMAGE_TAG: ${{ github.sha }}
+          VERSION_TAG: ${{ github.ref_name }}
         run: |
-          docker tag expenzox-frontend:latest $ECR_REGISTRY:frontend-$IMAGE_TAG
-          docker tag expenzox-backend:latest $ECR_REGISTRY:backend-$IMAGE_TAG
+          docker tag expenzox-frontend:latest $ECR_REGISTRY:frontend-$VERSION_TAG
+          docker tag expenzox-backend:latest $ECR_REGISTRY:backend-$VERSION_TAG
 
-          docker push $ECR_REGISTRY:backend-$IMAGE_TAG
-          docker push $ECR_REGISTRY:frontend-$IMAGE_TAG
+          docker push $ECR_REGISTRY:backend-$VERSION_TAG
+          docker push $ECR_REGISTRY:frontend-$VERSION_TAG
 
 
 
