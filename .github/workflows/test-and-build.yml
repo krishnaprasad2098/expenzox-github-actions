@@ -75,8 +75,8 @@ jobs:
           docker tag expenzox-frontend:latest $ECR_REGISTRY/$ECR_REPOSITRY:frontend-$IMAGE_TAG
           docker tag expenzox-backend:latest $ECR_REGISTRY/$ECR_REPOSITRY:backend-$IMAGE_TAG
 
-          docker push $ECR_REGISTRY/$ECR_REPOSITRY:backend-$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITRY:frontend-$IMAGE_TAG
+          docker push $ECR_REGISTRY:backend-$IMAGE_TAG
+          docker push $ECR_REGISTRY:frontend-$IMAGE_TAG
 
 
 
