@@ -10,4 +10,4 @@ jest.config.js
 .gitignore
 coverage
 tmp
-.env
+

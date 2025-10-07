@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+Dockerfile
+.git
+.gitignore
+dist
+
+jest.config.js
+
+src/tests
+**/*.test.js
+
+
+# Docker config files (optional)
+Dockerfile

@@ -1,33 +1,35 @@
-# FROM node:22.19.0-alpine
+FROM node:22.19.0-alpine
 
-# WORKDIR /app
+WORKDIR /app
 
-# # COPY package.json .
+# COPY package.json .
 
-# COPY package.json package-lock.json .
+COPY package.json package-lock.json .
 
-# RUN npm ci --only=production --no-cache
+RUN npm ci --only=production --no-cache
 
-# COPY . .
+COPY . .
 
-# EXPOSE 8000
+EXPOSE 8000
 
-# CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev"]
 
 
 
 # Build Stage
-FROM node:22.19.0-alpine AS build
+# FROM node:22.19.0-alpine AS build
 
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
-COPY . .
+# WORKDIR /app
+# COPY package.json package-lock.json ./
+# RUN npm ci --only=production
+# COPY . .
 
-# Final distroless image
-FROM gcr.io/distroless/nodejs22-debian12
+# # Final distroless image
+# FROM gcr.io/distroless/nodejs22-debian12
 
-WORKDIR /app
-COPY --from=build /app /app
+# WORKDIR /app
+# COPY --from=build /app /app
 
-CMD ["node", "server.js"]
+
+# CMD ["node", "server.js"]
+
