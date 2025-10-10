@@ -1,4 +1,4 @@
-name: CI/CD pipeline
+name: CI pipeline
 on:
   push:
     # branches:
@@ -80,6 +80,7 @@ jobs:
 
           docker push $ECR_REGISTRY:backend-$VERSION_TAG
           docker push $ECR_REGISTRY:frontend-$VERSION_TAG
+
 
 
 
