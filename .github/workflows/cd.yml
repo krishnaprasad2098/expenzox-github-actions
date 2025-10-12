@@ -1,0 +1,42 @@
+name: CD pipeline
+
+on: 
+  workflow_run:
+    workflows: ["CI pipeline"]
+    types:
+      - completed
+
+
+jobs:
+  Pull-Images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v5.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get version from triggering workflow
+        id: get-version
+        run: |
+          echo "version=${{ github.event.worflow_run.head_branch}}" >> $GITHUB_OUTPUT
+          echo "Deploying version: ${{ github.event.workflow_run.head_branch }}"
+      
+      - name: Deploy to EC2
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
+          VERSION_TAG: ${{ steps.get-version.outputs.version }}
+          FRONTEND_IMAGE: frontend-$VERSION_TAG
+          BACKEND_IMAGE: backend-$VERSION_TAG
+        run: |
+          echo "Deploying to EC2"
+
+
+      
