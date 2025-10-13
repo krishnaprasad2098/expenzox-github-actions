@@ -1,11 +1,10 @@
 name: CD pipeline
 
-on: 
+on:
   workflow_run:
     workflows: ["CI pipeline"]
     types:
       - completed
-
 
 jobs:
   Pull-Images:
@@ -28,7 +27,7 @@ jobs:
         run: |
           echo "version=${{ github.event.worflow_run.head_branch}}" >> $GITHUB_OUTPUT
           echo "Deploying version: ${{ github.event.workflow_run.head_branch }}"
-      
+
       - name: Deploy to EC2
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
@@ -86,7 +85,7 @@ jobs:
           EOF
 
           rm -f private_key.pem
-      
+
       - name: Deployment Status
         if: success()
         run: echo "Deployment to EC2 completed"
