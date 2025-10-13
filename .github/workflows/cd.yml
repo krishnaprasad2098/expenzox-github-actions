@@ -51,7 +51,7 @@ jobs:
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
           echo "Connected through SSH"
-  
+
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
               sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
             
