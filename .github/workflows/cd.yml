@@ -25,15 +25,15 @@ jobs:
       - name: Get version from triggering workflow
         id: get-version
         run: |
-          echo "version=${{ github.event.worflow_run.head_branch}}" >> $GITHUB_OUTPUT
+          echo "version=${{ github.event.workflow_run.head_branch}}" >> $GITHUB_OUTPUT
           echo "Deploying version: ${{ github.event.workflow_run.head_branch }}"
 
       - name: Deploy to EC2
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
           VERSION_TAG: ${{ steps.get-version.outputs.version }}
-          FRONTEND_IMAGE: frontend-${{ github.event.worflow_run.head_branch }}
-          BACKEND_IMAGE: backend-${{ github.event.worflow_run.head_branch }}
+          FRONTEND_IMAGE: frontend-${{ github.event.workflow_run.head_branch }}
+          BACKEND_IMAGE: backend-${{ github.event.workflow_run.head_branch }}
         run: |
           echo "${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
