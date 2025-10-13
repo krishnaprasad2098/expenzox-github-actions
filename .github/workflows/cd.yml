@@ -39,8 +39,18 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
+          if  ! ssh-keygen -y -f private_key.pem > /dev/null 2>&1; then
+            echo "Error: Invalid SSH key format"
+            cat private_key.pem
+            exit 1
+          fi
+
+          echo "SSH started"
+
           ssh -i private_key.pem -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+          echo "Connected through SSH"
 
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
               sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
