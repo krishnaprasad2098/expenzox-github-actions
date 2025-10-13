@@ -32,8 +32,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
           VERSION_TAG: ${{ steps.get-version.outputs.version }}
-          FRONTEND_IMAGE: frontend-${{ steps.get-version.outputs.version }}
-          BACKEND_IMAGE: backend-${{ steps.get-version.outputs.version }}
+          FRONTEND_IMAGE: frontend-${{ github.event.worflow_run.head_branch }}
+          BACKEND_IMAGE: backend-${{ github.event.worflow_run.head_branch }}
         run: |
           echo "${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
