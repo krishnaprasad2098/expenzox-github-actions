@@ -66,7 +66,7 @@ jobs:
             sudo docker rm backend || true
 
             echo "Starting new backend container..."
-            sudo docker run -d --name=backend --restart unless-stopped -p 8000:8000 -p 443:443 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
+            sudo docker run -d --name=backend --restart unless-stopped -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
             echo "Stopping old frontend container.."
             sudo docker stop frontend || true
@@ -74,7 +74,7 @@ jobs:
 
 
             echo "Starting a new Frontend Container"
-            sudo docker run -d --name=frontend --restart unless-stopped -p 80:80 -p 443:443 ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+            sudo docker run -d --name=frontend --restart unless-stopped -p 80:80  ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
 
             echo "Verifying containers..."
             sudo docker ps | grep -E 'backend|frontend'
