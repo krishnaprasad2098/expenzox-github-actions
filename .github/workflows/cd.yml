@@ -36,7 +36,51 @@ jobs:
           FRONTEND_IMAGE: frontend-$VERSION_TAG
           BACKEND_IMAGE: backend-$VERSION_TAG
         run: |
-          echo "Deploying to EC2"
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+          ssh -i private_key.pem -o StrictHostKeyChecking=no \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+              sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            
+            echo "Pulling backend Image: ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
+            sudo docker pull ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
+
+            echo "Pulling frontend Image: ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}"
+            sudo docker pull ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+
+            echo "Stopping old backend container.."
+            sudo docker stop backend || true
+            sudo docker rm backend || true
+
+            echo "Starting new backend container..."
+            sudo docker run -d --name=backend --restart unless-stopped -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
+
+            echo "Stopping old frontend container.."
+            sudo docker stop frontend || true
+            sudo docker rm frontend || true
 
 
+            echo "Starting a new Frontend Container"
+            sudo docker run -d --name=frontend --restart unless-stopped -p 80:80 -p 443:443 ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+
+            echo "Verifying containers..."
+            sudo docker ps | grep -E 'backend|frontend'
+
+            echo "Cleaning up old images..."
+            sudo docker image prune -af
+
+            echo "Deployment completed successfully!"
+          EOF
+
+          rm -f private_key.pem
       
+      - name: Deployment Status
+        if: success()
+        run: echo "Deployment to EC2 completed"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "Deployment to EC2 failed."
