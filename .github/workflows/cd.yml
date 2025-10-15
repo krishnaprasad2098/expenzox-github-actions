@@ -63,11 +63,11 @@ jobs:
 
             echo "Stopping old backend container.."
             sudo docker stop backend || true
-            sudo docker rm backend || true
+            sudo docker rm -f backend || true
 
             echo "Stopping old frontend container.."
             sudo docker stop frontend || true
-            sudo docker rm frontend || true
+            sudo docker rm -f frontend || true
 
             sudo docker network create expenzox
 
