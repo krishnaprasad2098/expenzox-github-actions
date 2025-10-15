@@ -63,20 +63,22 @@ jobs:
 
             echo "Stopping old backend container.."
             sudo docker stop backend || true
-            sudo docker rm -f backend || true
+            sudo docker rm backend || true
 
             echo "Stopping old frontend container.."
             sudo docker stop frontend || true
-            sudo docker rm -f frontend || true
+            sudo docker rm frontend || true
 
+            echo "Deleting the older network if exists"
+            sudo docker network rm expenzox || true
             sudo docker network create expenzox
 
             echo "Starting new backend container..."
-            sudo docker run -d --name=backend --network=expenzox --restart unless-stopped -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
+            sudo docker run -d --name=backend --network=expenzox  -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
 
             echo "Starting a new Frontend Container"
-            sudo docker run -d --name=frontend --network=expenzox --restart unless-stopped -p 80:80  ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+            sudo docker run -d --name=frontend --network=expenzox -p 80:80  ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
 
             echo "Verifying containers..."
             sudo docker ps | grep -E 'backend|frontend'
