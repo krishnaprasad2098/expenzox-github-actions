@@ -170,6 +170,19 @@ jobs:
               echo "dockeruser ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/dockeruser
             fi
 
+            echo "Setting up SSH for docker user"
+
+            sudo mkdir -p /home/dockeruser/.ssh
+            sudo chmod 700 /home/dockeruser/.ssh
+            if [ -f ~/.ssh/authorized_keys ]; then
+              sudo cp ~/.ssh/authorized_keys /home/dockeruser/.ssh/authorized_keys
+              sudo chmod 600 /home/dockeruser/.ssh/authorized_keys
+              sudo chown -R dockeruser:dockeruser /home/dockeruser/.ssh
+              echo "SSH key copied from $USER to dockeruser."
+            else
+              echo "Warning: ~/.ssh/authorized_keys not found for $USER!"
+            fi
+
             # Restart Docker service to apply permissions
             sudo systemctl restart docker
 
