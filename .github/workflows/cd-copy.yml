@@ -9,49 +9,49 @@ on:
 jobs:
   Pull-Images-and-Deploy:
     runs-on: ubuntu-latest
-steps:
-  - name: Checkout Code
-    uses: actions/checkout@v5
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v5
 
-  - name: Configure AWS
-    uses: aws-actions/configure-aws-credentials@v5.0.0
-    with:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v5.0.0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-  - name: Login to ECR
-    uses: aws-actions/amazon-ecr-login@v2
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
 
-  - name: Get version from triggering workflow
-    id: get-version
-    run: |
-      echo "version=${{ github.event.workflow_run.head_branch}}" >> $GITHUB_OUTPUT
-      echo "Deploying version: ${{ github.event.workflow_run.head_branch }}"
+    - name: Get version from triggering workflow
+      id: get-version
+      run: |
+        echo "version=${{ github.event.workflow_run.head_branch}}" >> $GITHUB_OUTPUT
+        echo "Deploying version: ${{ github.event.workflow_run.head_branch }}"
 
-  - name: Deploy to EC2
-    env:
-      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      VERSION_TAG: ${{ steps.get-version.outputs.version }}
-      FRONTEND_IMAGE: frontend-${{ github.event.workflow_run.head_branch }}
-      BACKEND_IMAGE: backend-${{ github.event.workflow_run.head_branch }}
-    run: |
-      echo "${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
-      echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
-      chmod 600 private_key.pem
+    - name: Deploy to EC2
+      env:
+        ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+        VERSION_TAG: ${{ steps.get-version.outputs.version }}
+        FRONTEND_IMAGE: frontend-${{ github.event.workflow_run.head_branch }}
+        BACKEND_IMAGE: backend-${{ github.event.workflow_run.head_branch }}
+      run: |
+        echo "${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
 
-      if  ! ssh-keygen -y -f private_key.pem > /dev/null 2>&1; then
-        echo "Error: Invalid SSH key format"
-        cat private_key.pem
-        exit 1
-      fi
+        if  ! ssh-keygen -y -f private_key.pem > /dev/null 2>&1; then
+          echo "Error: Invalid SSH key format"
+          cat private_key.pem
+          exit 1
+        fi
 
-      echo "Starting SSH session..."
+        echo "Starting SSH session..."
 
-      # First SSH as root/ubuntu to ensure dockeruser exists
-      ssh -i private_key.pem -o StrictHostKeyChecking=no \
-        ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          echo "Connected as initial user, setting up dockeruser..."
+        # First SSH as root/ubuntu to ensure dockeruser exists
+        ssh -i private_key.pem -o StrictHostKeyChecking=no \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            echo "Connected as initial user, setting up dockeruser..."
 
           # -----------------------------------------------------------
           # 🧩 Create Docker User (if not exists)
@@ -70,13 +70,12 @@ steps:
           sudo systemctl restart docker
 
           echo "Docker user setup complete!"
-      EOF
+        EOF
 
-      echo "Reconnecting as dockeruser for deployment..."
+        echo "Reconnecting as dockeruser for deployment..."
 
-      # Now deploy as dockeruser (non-root)
-      ssh -i private_key.pem -o StrictHostKeyChecking=no \
-        dockeruser@${{ secrets.EC2_HOST }} << 'EOF'
+        # Now deploy as dockeruser (non-root)
+        ssh -i private_key.pem -o StrictHostKeyChecking=no dockeruser@${{ secrets.EC2_HOST }} << 'EOF'
 
           echo "Connected as dockeruser. Starting deployment..."
 
@@ -116,13 +115,13 @@ steps:
           docker image prune -af
 
           echo "✅ Deployment completed successfully!"
-      EOF
+        EOF
           rm -f private_key.pem
 
-      - name: Deployment Status
-        if: success()
-        run: echo "Deployment to EC2 completed"
+        - name: Deployment Status
+          if: success()
+          run: echo "Deployment to EC2 completed"
 
-      - name: Deployment Failed
-        if: failure()
-        run: echo "Deployment to EC2 failed."
+        - name: Deployment Failed
+          if: failure()
+          run: echo "Deployment to EC2 failed."
