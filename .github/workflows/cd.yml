@@ -69,7 +69,7 @@ jobs:
             sudo docker stop frontend || true
             sudo docker rm frontend || true
 
-            docker network create expenzox
+            sudo docker network create expenzox
 
             echo "Starting new backend container..."
             sudo docker run -d --name=backend --network=expenzox --restart unless-stopped -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
