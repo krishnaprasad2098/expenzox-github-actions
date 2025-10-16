@@ -195,6 +195,7 @@ jobs:
           # ssh -i private_key.pem -o StrictHostKeyChecking=no \
           #   dockeruser@${{ secrets.EC2_HOST }} << 'EOF'
 
+            cd /
             sudo su - dockeruser
 
               echo "Connected as dockeruser. Starting deployment..."
