@@ -224,10 +224,10 @@ jobs:
               docker network create expenzox
 
               echo "Starting backend container..."
-              docker run -d --name=backend --network=expenzox --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
+              docker run -d --name=backend --network=expenzox -p 8000:8000 --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
               echo "Starting frontend container..."
-              docker run -d --name=frontend --network=expenzox --restart unless-stopped -p 80:80 ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+              docker run -d --name=frontend --network=expenzox -p 80:80 --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
 
               echo "Verifying containers..."
               docker ps | grep -E 'backend|frontend'
