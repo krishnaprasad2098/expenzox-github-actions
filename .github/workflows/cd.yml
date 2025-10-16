@@ -192,11 +192,11 @@ jobs:
           echo "Reconnecting as dockeruser for deployment..."
 
           # Now deploy as dockeruser (non-root)
-          # ssh -i private_key.pem -o StrictHostKeyChecking=no \
-          #   dockeruser@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i private_key.pem -o StrictHostKeyChecking=no \
+            dockeruser@${{ secrets.EC2_HOST }} << 'EOF'
 
-            cd /
-            sudo su - dockeruser
+            # cd /
+            # sudo su - dockeruser
 
               echo "Connected as dockeruser. Starting deployment..."
 
