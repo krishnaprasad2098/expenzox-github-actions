@@ -54,7 +54,7 @@
 
 #             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
 #               sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-            
+
 #             echo "Pulling backend Image: ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
 #             sudo docker pull ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
@@ -78,7 +78,6 @@
 #             echo "Starting new backend container..."
 #             sudo docker run -d --name=backend --network=expenzox --restart unless-stopped  -p 8000:8000 ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
-
 #             echo "Starting a new Frontend Container"
 #             sudo docker run -d --name=frontend --network=expenzox --restart unless-stopped  -p 80:80  ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
 
@@ -100,7 +99,6 @@
 #       - name: Deployment Failed
 #         if: failure()
 #         run: echo "Deployment to EC2 failed."
-
 
 name: CD pipeline
 
@@ -202,7 +200,7 @@ jobs:
 
               aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
                 docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-          
+
               echo "Pulling backend Image: ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}"
               docker pull ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
@@ -227,7 +225,7 @@ jobs:
               docker run -d --name=backend --network=expenzox -p 8000:8000 --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.BACKEND_IMAGE }}
 
               echo "Starting frontend container..."
-              docker run -d --name=frontend --network=expenzox -p 80:80 --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
+              docker run -d --name=frontend --network=expenzox -p 8081:80 --restart unless-stopped ${{ secrets.ECR_REGISTRY }}:${{ env.FRONTEND_IMAGE }}
 
               echo "Verifying containers..."
               docker ps | grep -E 'backend|frontend'
@@ -246,4 +244,3 @@ jobs:
       - name: Deployment Failed
         if: failure()
         run: echo "Deployment to EC2 failed."
-
